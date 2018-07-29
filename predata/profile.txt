@@ -1,0 +1,24 @@
+readme.txt
+
+
+1, all _1.m file are just for picc to use!
+2, getBatch  modify [0,255] to [0,1] so /255  when we train picc   and class_weight 21->2
+3, attention that the unet's last two layers are 'error' and 'objective' 
+    while FCN is 'accuracy' and 'objective'  
+    that's may be why m-acc all the same 0.4762
+meanwhile  relu_prediction after prediction!!!
+4, preset to zeros, to ignore them, but in picc we need set to 1 as bg
+   in Unet the ori image size 512 is different with label image 388
+   but in FCN are the same!
+5, Unet , please make sure that inside to set 21 to 2
+6, SegmentationAccuracy  set [21,21]  to 0   why not 3?  21=20+1(bg), but picc just=bg+roi
+   use following code to cut 0
+   ok = labels > 0 ;
+   numPixels = sum(ok(:)) ;
+   obj.confusion = obj.confusion + ...
+      accumarray([labels(ok),predictions(ok)],1,[2 2]) ;
+
+%%  about dice score loss
+1, in SegmentationLoss.m,　 dice, no weight!
+   change  'instanceWeights', 1./mass   to    'instanceWeights', []
+ the same in backprogation
